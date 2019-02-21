@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.js"></script>
+    <style type="text/css">
+        .menu div{
+            float: left;
+            margin-right: 30px;
+            text-align: center;
+            height: 50px;
+            line-height: 38px;
+        }    .menu{
+                 margin: 0 auto;
+                 width: 700px;
+                 height: 100px;
+                 text-align: center
+             }
+        select {
+            float: left;
+            width: 90px;
+            border: 1px solid #555;
+            padding: 0.5em;
+            font-size: 15px;
+            line-height: 1.3em;
+            background: #fff;
+            -webkit-appearance: none;
+            -webkit-box-shadow: 1px 1px 1px #fff;
+            -webkit-border-radius: 0.5em;
+        }
+        input{
+            height: 33px;
+
+        }
+        .menu p{
+            float: left;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #7b7769;
+        }
+
+        .menu button {
+            float: left;
+        }
+    .boxdiv{
+
+    }
+        .boxdiv h2{
+            padding-left: 10px;
+            height: 40px;
+            border-bottom: 1px solid;
+            width: 85px;
+            text-align: center;
+        }
+        .boxdiv p{
+            font-size: 16px;
+            margin: 2px 18px;
+            height: 40px;
+            width: 92%;
+            line-height: 40px;
+            float: right;
+            border-bottom: 1px solid #d4c8c8;
+        }
+        .boxdiv span {
+            font-family: "黑体";
+            font-size: 20px;
+            margin-right: 5px;
+        }
+        .layui-card-body{
+            height: 300px;
+        }
+        .left{
+            min-height: 200px;
+            overflow-y: auto;
+        }
+        .right{
+            min-height: 300px;
+            overflow-y: scroll;
+        }
+        .layui-card-header{
+            font-size: 23px;
+            font-weight: initial;
+        }
+    </style>
+</head>
+
+<body>
+<div id="menu" class="menu">
+    <div>
+        <p>城市</p><select  id="citySelect">
+        <option value="1">上海</option>
+        <option value="2" selected = "selected">苏州</option>
+        <option value="3">武汉</option>
+    </select>
+    </div>
+    <div>
+        <p>数据类型</p><select  id="interfaceSelect" style="width: 150px;">
+        <option value="1">房天下挂单记录</option>
+        <option value="2" selected = "selected">链家成交记录</option>
+    </select>
+    </div>
+    <div><button id="startBtn" class="layui-btn" data-type="reload">开始抓取</button></div>
+    <div><button id="stopBtn" class="layui-btn" data-type="reload">停止抓取</button></div>
+    <div><button id="lookProssorBtn" class="layui-btn" data-type="reload">查看进度</button></div>
+</div>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="height:400px">
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">进度概况</div>
+                <div class="layui-card-body  left">
+                    进度条了解一下~
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">进度详情</div>
+                <div class="layui-card-body right" id="prs_detail">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+</body>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    var host="http://localhost:8081";
+
+    var prossorkeys=["_FangTianXiaLoadHtmlPageManager","_LianJiaLoadHtmlPageManager"];
+    layui.use(['layer'],function () {
+        var layer = layui.layer;
+        $("#lookProssorBtn").on('click',function(){
+            lookProssorTask();
+        });
+
+        $('#startBtn').on('click', function(){
+
+            startRegisterTask();
+        });
+        $('#stopBtn').on('click', function(){
+            layer.confirm('确定停止吗？', {
+                skin: 'layui-layer-molv',
+                btn: ['停止','再考虑一下'] //按钮
+            }, function(){
+                StopSystemTask();
+                layer.msg("已停止");
+            }, function(){
+
+            });
+        });
+
+        function  ProssorDetailPrintHtml(data) {
+            //待加载列表
+            //当前运行
+            //总执行时间
+            var html="<div class='boxdiv'>";
+            var waitstr="";
+            waitstr=data.waitDistrict.join(',');
+            html+= "<p><span>待抓取区县列表:</span>"+ waitstr+"</p>";
+            var current=data.current;
+            if(current!=null){
+                var timestamp = (new Date()).valueOf();
+                eclispe=(timestamp-execTime);
+                html+= "<p><span>当前区县:</span>"+ current.district+"</p>";
+                html+= "<p><span>已执行时间:</span>"+ eclispe+" ms </p>";
+                html+= "<p><span>链接数:</span>"+ current.linkCount+"</p>";
+                html+= "<p><span>总页数:</span>"+ current.pageSize+"</p>";
+                html+= "<p><span>每页平均耗时:</span>"+ current.eclispe+"</p>";
+            }
+
+            html+= "<p><span>第几页:</span>"+ data.pageIndex+"</p>";
+            html+= "<p><span>链接:</span>"+ data.link+"</p>";
+            if(current.times!=null){
+                var avg= current.times.avg();
+                html+= "<p><span>解析时每页平均耗时:</span>"+avg+"</p>";
+                html+= "<p><span>解析单页最大耗时:</span>"+current.times.max()+"</p>";
+            }
+            html+="</div>";
+            return html;
+
+        };
+    function  lookProssorTask() {
+        var cityId=$("#citySelect option:selected").val();
+        var interfaceType=$("#interfaceSelect option:selected").val();
+        var  key="";
+        if(interfaceType==1){
+            key=cityId+prossorkeys[0];
+        }else  {
+            key=cityId+prossorkeys[1];
+        }
+        $.ajax({
+            url: host+"/monitor/getDataMapValueByContainsKey?key="+key,
+            type: "GET",
+            success: function(data){
+                if(data.code.errcode=="0"){
+                    var info=data.data;
+                    if(info!=null){
+                            //页面层
+                        var cname=  $("#citySelect option:selected").text();
+                         var html=   ProssorPrintHtml(info,cname);
+                          $(".left").html(html);
+                        }else {
+                            layer.msg("没有查到进程", {icon: 5});
+                        }
+
+                    }
+
+
+            }
+
+        });
+    };
+  function  ProssorPrintHtml(data,cityname) {
+   var html="<div class='boxdiv'>";
+      html+= "<p><span>城市:</span>"+ cityname+"</p>";
+      if(data!=null&&data!=null){
+          for (var key in data) {
+              var a = data[key];
+              html+= "<p><span>区县:</span>"+ a.district+"</p>";
+              html+= "<p><span>第几页/总页数:</span>"+ a.pageIndex+"/"+a.pageSize+"</p>";
+              html+= "<p><span>链接:</span>"+ a.link+"</p>";
+              html+= "<p style='text-align: right;color: #eb7350'><a  href='javascript:loadProssorDetailInfo(\""+a.district+"\")'>了解更多></a></p>";
+              html+= "<hr/>";
+
+          }
+
+          html+="</div>";
+      }
+
+      return html;
+
+  };
+
+    function  startRegisterTask() {
+        var cityId=$("#citySelect option:selected").val();
+        var interfaceType=$("#interfaceSelect option:selected").val();
+        var apiUrl="";
+        if(interfaceType==1){
+            apiUrl="/fang/register?cityId="+cityId;
+        }else if(interfaceType==2){
+            apiUrl="/lian/register?cityId="+cityId;
+        }
+
+        $.ajax({
+            url: host+apiUrl,
+            type: "GET",
+            success: function(data){
+                console.log("触发点击");
+                if(data.data!=null){
+                    var infos=data.data;
+                    if(infos!=null){
+                        if(infos==1){
+                            layer.msg("注册任务成功");
+                        }else {
+                            if(infos==2){
+                                layer.msg("查询到有存档，从上次开始的地方继续执行", {icon: 5});
+                            }else if(infos==3){
+                                layer.msg("在进程中已经有任务存在了，不可重复注册相同类型任务", {icon: 5});
+                            }else {
+                                layer.msg("注册任务失败", {icon: 5});
+                            }
+                        }
+
+                    }
+
+                }else{
+                    layer.msg("加载失败", {icon: 5});
+                }
+            }
+
+        });
+    };
+    function StopSystemTask() {
+
+        $.ajax({
+            url: host+"/home/stopSystem",
+            type: "GET",
+            success: function(data){
+
+                if(data.code.errcode=="0"){
+                    var infos=data.data;
+
+
+                }else{
+                    layer.msg("加载失败", {icon: 5});
+                }
+            }
+
+        });
+    };
+
+    });
+
+    function loadProssorDetailInfo(district) {
+        var cityId = $("#citySelect option:selected").val();
+        var key = "";
+        var interfaceType = $("#interfaceSelect option:selected").val();
+        if (interfaceType == 1) {
+            key = cityId + "_FangTianXiaLoadHtmlPageManager";
+        } else if (interfaceType == 2) {
+            key = cityId + "_LianJiaLoadHtmlPageManager";
+        }
+        $.ajax({
+            url: host + "/monitor/getProgressInfo?key=" + key + "&district=" + district,
+            type: "GET",
+            success: function (data) {
+
+                if (data.code.errcode == "0") {
+                    var infos = data.data;
+                    if (infos != null) {
+
+                        //待加载列表
+                        //当前运行
+                        //总执行时间
+                        var html = "<div class='boxdiv'>";
+
+                        var current = infos;
+                        html += "<p><span>当前区县:</span>" + current.district + "</p>";
+                        var maxTime = 0;
+                        if (current != null) {
+                            var timestamp = (new Date()).valueOf();
+
+                            eclispe = (timestamp - current.execTime);
+
+                            if (current.waitTowns != null) {
+                                var i = 0;
+                                var townstr = [];
+                                for (var town in current.waitTowns) {
+                                    townstr[town] = current.waitTowns[town].value;
+                                }
+
+                                html += "<p><span>待执行的乡镇:</span>" + townstr.join(',') + "</p>";
+                            }
+
+                            html += "<p><span>已执行时间:</span>" + Math.round(eclispe / 1000) + " s </p>";
+                            html += "<p><span>链接数:</span>" + current.linkCount + "</p>";
+                            html += "<p><span>总页数:</span>" + current.pageSize + "</p>";
+                        }
+
+                        if (current.times != null) {
+                            var avg = current.times.avg();
+                            avg = Math.round(avg);
+                            if (current.times != null && current.times.length > 0) {
+                                maxTime = current.times.max();
+                                maxTime = Math.round(maxTime);
+                            }
+
+                            html += "<p><span>解析时每页平均耗时:</span>" + avg + " s </p>";
+                            html += "<p><span>解析单页最大耗时:</span>" + maxTime + " s </p>";
+                        }
+                        html += "</div>";
+
+
+                        $("#prs_detail").html(html);
+                    } else {
+                        layer.msg("未查询到进度详情", {icon: 5});
+                    }
+
+
+                } else {
+                    layer.msg("加载失败", {icon: 5});
+                }
+            }
+
+        });
+    };
+
+    function cacl(arr, callback) {
+        var ret;
+        for (var i=0; i<arr.length;i++) {
+            ret = callback(arr[i], ret);
+        }
+        return ret;
+    }
+
+    Array.prototype.max = function () {
+        return cacl(this, function (item, max) {
+            if (!(max > item)) {
+                return item;
+            }
+            else {
+                return max;
+            }
+        });
+    };
+    Array.prototype.min = function () {
+        return cacl(this, function (item, min) {
+            if (!(min < item)) {
+                return item;
+            }
+            else {
+                return min;
+            }
+        });
+    };
+    Array.prototype.sum = function () {
+        return cacl(this, function (item, sum) {
+            if (typeof (sum) == 'undefined') {
+                return item;
+            }
+            else {
+                return sum += item;
+            }
+        });
+    };
+    Array.prototype.avg = function () {
+        if (this.length == 0) {
+            return 0;
+        }
+        return this.sum(this) / this.length;
+    };
+
+</script>

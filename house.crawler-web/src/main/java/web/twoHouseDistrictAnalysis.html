@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.js"></script>
+<style type="text/css">
+    .circle{
+
+        font-family: fantasy;
+        font-size: 30px;
+        text-align: center;
+        float: left;
+        margin-right: 50px;
+        width: 100px;
+        height: 100px;
+        background-color: aquamarine;
+        border-radius: 50%;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+    }
+    .cantainner{
+        width: 600px;
+        height: 200px;
+        margin: 0 auto;
+    }
+    .menu{
+        margin: 0 auto;
+        width: 700px;
+        height: 100px;
+        text-align: center
+    }
+   .circle p{
+        font-weight: bold;
+        height: 30px;
+        line-height: 30px;
+        width: 100px;
+        overflow: hidden;
+        margin-top: 20px;
+        font-size: 20px;
+   }
+    .circle span{
+        font-family: fantasy;
+        font-size: 30px;
+        text-align: center;
+        cursor:pointer;
+    }
+    .content{
+        width:98% ;
+        height: 500px;
+        background: #dcdccd;
+    }
+    ul{
+        display:none;
+    }
+    ul li{
+        float: left;
+        width: 180px;
+        margin: 20px;
+        font-size: 17px;
+        font-family: initial;
+    }
+    .menu div{
+        float: left;
+        margin-right: 30px;
+        text-align: center;
+        height: 50px;
+        line-height: 38px;
+    }
+    select {
+        float: left;
+        width: 90px;
+        border: 1px solid #555;
+        padding: 0.5em;
+        font-size: 15px;
+        line-height: 1.3em;
+        background: #fff;
+        -webkit-appearance: none;
+        -webkit-box-shadow: 1px 1px 1px #fff;
+        -webkit-border-radius: 0.5em;
+    }
+    input{
+        height: 33px;
+
+    }
+    .menu p{
+        float: left;
+       margin-right: 10px;
+        font-weight: bold;
+        color: #7b7769;
+    }
+    .divcss5-b{ margin-left:10px;overflow-y:scroll; overflow-x:scroll;}
+    .menu button {
+    float: left;
+}
+</style>
+
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+<div style="margin-bottom: 5px;">
+
+    <!-- 示例-970 -->
+    <ins class="adsbygoogle" style="display:inline-block;width:700px;height:700px" data-ad-client="ca-pub-6111334333458862" data-ad-slot="3820120620"></ins>
+
+</div>
+<div class="menu">
+    <div >
+        <div>
+        <p>城市</p><select id="citySelect">
+            <option value="1">上海</option>
+            <option value="2">苏州</option>
+            <option value="3">武汉</option>
+        </select>
+        </div>
+        <div>
+            <p>区县</p><input id="keyword" value="嘉定" >
+            </div>
+        <div>
+            <p>时间维度</p><select  id="timeSelect">
+                <option value="1">一个月</option>
+                <option value="2" selected = "selected">三个月</option>
+                <option value="3">六个月</option>
+                <option value="4">全部</option>
+            </select>
+        </div>
+
+    </div>
+    <button class="layui-btn" data-type="reload">加载</button></div>
+
+
+<div class="cantainner">
+    <div class="circle"><p>上涨数</p><span id="up"></span></div>
+    <div class="circle"  style="background-color: #ffb100"><p>下跌数</p><span id="down"></span></div>
+    <div class="circle" style="background-color: #ffcc99"><p>平稳</p><span id="eq"></span></div>
+    <div class="circle" style="background-color: orchid"> <p>总量</p><span id="total"></span></div>
+</div>
+<div class="content divcss5-b">
+<ul id="uplist" >
+
+</ul>
+    <ul id="downlist">
+
+    </ul>
+    <ul id="eqlist">
+
+    </ul>
+</div>
+
+</body>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        function  loadData() {
+
+            var cityId=$("#citySelect option:selected").val();
+            var district=$("#keyword").val();
+            var type=$("#timeSelect  option:selected").val();
+            $.ajax({
+                url: "http://localhost:8081/fang/analysisByDistrict",
+                type: "POST",
+                data: JSON.stringify({"cityId":cityId,"district":district,"type":type}),
+                contentType:"application/json",
+                success: function(data){
+
+                    if(data.code.errcode=="0"){
+                        var info=data.data;
+                        $("#up").text(info.up);
+                        $("#down").text(info.down);
+                        $("#eq").text(info.eq);
+                        $("#total").text(info.total);
+
+                        if(info.listMap!=null){
+                           var uplist=info.listMap.up;
+                           var downlist=info.listMap.down;
+                           var eqlist=info.listMap.eq;
+                           if(uplist!=null&&uplist.length>0){
+                             var html=  load(uplist);
+                             $("#uplist").html(html);
+                           }
+                            if(downlist!=null&&downlist.length>0){
+                                var html=  load(downlist);
+                                $("#downlist").html(html);
+                            }
+                            if(eqlist!=null&&eqlist.length>0){
+                                var html=  load(eqlist);
+                                $("#eqlist").html(html);
+                            }
+                        }
+
+                    }else{
+                        layer.msg("加载失败", {icon: 5});
+                    }
+                }
+
+            });
+        };
+
+
+      function load (items) {
+          var html="";
+          items.forEach(function(element) {
+              html+="<li>"+element+"</li>";
+              console.log(element);
+          });
+          return html;
+      }
+        var $ = layui.$, active = {
+        };
+        $('.layui-btn').on('click', function(){
+
+            loadData();
+        });
+        $(".circle span").on("click",function () {
+
+         var id= $(this).attr("id");
+            $('.circle span').each(function (i){
+                var id= $(this).attr("id");
+                $("#"+id+"list").hide();
+            });
+         $("#"+id+"list").show();
+
+        })
+    });
+
+</script>
+</html>

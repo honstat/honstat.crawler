@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--<context:component-scan base-package="com.weimob.bs.soa.mq.kafka.config"/>-->
+
+    <!--<bean class="com.weimob.bs.soa.mq.common.config.CommonMQConfig"/>-->
+    <!--<bean class="com.weimob.bs.soa.mq.common.config.CommonConsumerConfig"/>-->
+
+
+
+    <!--<context:component-scan base-package="com.weimob.bs.soa.mq.common.config"/>-->
+    <!--<context:component-scan base-package="com.weimob.bs.soa.mq.kafka.config"/>-->
+    <!--<context:component-scan base-package="com.weimob.bs.soa.mq.rocketmq.config"/>-->
+
+    <!--<bean class="com.weimob.bs.soa.mq.common.def.DefaultMQSendTemplate"/>-->
+    <!--<bean class="com.weimob.bs.soa.mq.common.def.DefaultConsumerInit"/>-->
+</beans>

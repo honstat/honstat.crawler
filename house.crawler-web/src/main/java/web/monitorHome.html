@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.js"></script>
+    <style type="text/css">
+        select {
+            float: left;
+            width: 90px;
+            border: 1px solid #555;
+            padding: 0.5em;
+            font-size: 15px;
+            line-height: 1.3em;
+            background: #fff;
+            -webkit-appearance: none;
+            -webkit-box-shadow: 1px 1px 1px #fff;
+            -webkit-border-radius: 0.5em;
+        }
+        .idcontextul span{
+            font-size: 20px;
+            border-bottom-color: gray;
+            line-height: 40px;
+            height: 110px;
+            font-weight: 500;
+            text-align: center;
+        }
+       #menu div {
+           float: left;
+           margin-right: 20px;
+
+        }
+        #menu{
+            height: 80px;
+            width: 97%;
+            margin-bottom: 40px;
+        }
+        .idcontextul div{
+              border: 2px solid #8080802b;
+              width: 200px;
+              height: 100px;
+              text-align: center;
+              margin-bottom: 20px;
+          }
+        .idcontextul h3{
+            font-size: 17px;
+            line-height: 51px;
+            text-align: center;
+            width: 200px;
+            height: 51px;
+            background-color: #009688;
+            color: white;
+        }
+        .titleDiv h2{
+            color: white;
+            line-height: 50px;
+            margin-left: 15px;
+        }
+
+        .menuContaindiv{
+            width: 100% !important;
+            min-height: 200px;
+            display:inline-block;
+        }
+        .titleDiv{
+            background-color: gray;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            font: 17px bold white;
+        }
+        .idcontextul{
+            width: 100%;
+            min-height: 150px;
+            height: auto;
+        }
+        .contextContainner{
+            min-height: 800px;
+            overflow-y:auto; overflow-x:hidden;
+        }
+        .idcontextul li{
+            height: 100%;
+            width: 200px;
+            float: left;
+            margin-right: 10px;
+        }
+        #resourceMonitor li{
+            width: 100%;
+            height: 135px;
+        }
+        #resourceMonitor div{
+            float: left;
+            margin-right: 10px;
+        }
+        #resourceMonitor div h3{
+            line-height: 51px;
+            text-align: center;
+            width: 200px;
+            height: 51px;
+            background-color: #009688;
+            color: white;
+        }
+        .speeddiv{
+           float: right !important;
+            margin-right: 30px;
+            text-align: center;
+            height: 50px;
+            line-height: 38px;
+            width: 200px;
+            color: white;
+        }
+        .speeddiv p{
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<div id="menu" class="menu">
+    <div><button id="loadbtn" class="layui-btn" data-type="reload">加载</button></div>
+    <div><button id="freshenBtn" class="layui-btn" data-type="reload">定时刷新</button></div>
+
+</div>
+<div id="id_context"  class="contextContainner">
+    <div class="menuContaindiv" >
+        <div class="titleDiv">
+            <h2>事件解析队列</h2>
+        </div>
+        <ul class="idcontextul" id="eventQuene">
+
+            <li>
+                <div>
+                    <h3>队列数</h3>
+                    <span >20</span>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h3>队列数</h3>
+                    <span >20</span>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h3>队列数</h3>
+                    <span >20</span>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <h3>队列数</h3>
+                    <span >20</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+        <div class="menuContaindiv">
+            <div class="titleDiv">
+                <h2>实时统计队列</h2>
+
+            </div>
+            <ul class="idcontextul"  id="realAnalysisQuene">
+                <li>
+                    <div>
+                        <h3>队列数</h3>
+                        <span >100</span>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <h3>队列数</h3>
+                        <span >200</span>
+                    </div>
+                </li>
+            </ul>
+
+</div>
+    <div class="menuContaindiv"  id="resourceMonitor">
+        <div class="titleDiv">  <h2 style="float: left">资源消耗情况</h2>
+            <div class=" speeddiv" ><p>采集间隔设置</p>
+            <select  id="timeSpeedSelect">
+                <option value="10">10秒</option>
+                <option value="30" >30秒</option>
+                <option value="60" selected = "selected">1分钟</option>
+                <option value="300">5分钟</option>
+                <option value="1800">30分钟</option>
+                <option value="3600">一小时</option>
+            </select>
+
+            </div>
+
+        </div>
+            <ul class="idcontextul" id="cpuul">
+                <li>
+                    <div>
+                        <h3>ip</h3><span>10.213.12.3</span>
+                    </div>
+                    <div >
+                        <h3>CPU</h3><span>7%</span>
+                    </div>
+                    <div >
+                        <h3>内存</h3><span>65%</span>
+                    </div>
+                    <div>
+                        <h3>磁盘</h3><span>10%</span>
+                    </div>
+
+                </li>
+                <li>
+                    <div>
+                        <h3>ip</h3><span>10.213.12.4</span>
+                    </div>
+                    <div>
+                        <h3>CPU</h3><span>7%</span>
+                    </div>
+                    <div>
+                        <h3>内存</h3><span>65%</span>
+                    </div>
+                    <div>
+                        <h3>磁盘</h3><span>10%</span>
+                    </div>
+
+                </li>
+            </ul>
+    </div>
+</div>
+
+
+
+</body>
+<script>
+    layui.use('table', function(){
+        var host="http://localhost:8081";
+        var table = layui.table;
+        var  keys="";
+        var mapKeys = [
+            {name: "实时统计队列池0队列数", key: "realAnalysis_queue_0",count:0,type:2},
+            {name: "实时统计队列池1队列数",   key: "realAnalysis_queue_1",count:5,type:2},
+            {name: "实时统计队列池2队列数",  key: "realAnalysis_queue_2",count:0,type:2},
+            {name: "实时统计队列池3队列数",  key: "realAnalysis_queue_3",count:0,type:2},
+            {name: "小区走势队列总数",  key: "GetCommunityRecordIn_total",count:0,type:1},
+            {name: "小区走势队列已处理数",  key: "GetCommunityRecordIn_current",count:0,type:1},
+            {name: "挂单队列已处理数",  key: "HtmlLoadDetailIn_current",count:0,type:1},
+            {name: "挂单队列总数",  key: "HtmlLoadDetailIn_total",count:0,type:1},
+              {name: "抓取任务队列数",  key: "getQueueTaskSize",count:0,type:3},
+        ];
+
+
+        var cpumapKeys=[
+            {name:"IP地址",key:"IP"},
+            {name:"PID",key:"JVM_PID"},
+            {name:"JVM线程数",key:"THREAD_COUNT"},
+            {name:"CPU占比",key:"CPU_RATE"},
+            {name:"上行速度",key:"UP_SPEED"},
+            {name:"下行速度",key:"DOWN_SPEED"},
+        {name:"物理内存使用比例",key:"USE_MEMORY_RATE"},
+        {name:"剩余物理内存",key:"FREE_MEMORY"},
+        {name:"物理内存已用/总量",key:"MEMORY_USE_TOTAL"},
+        {name:"JVM内存已用/最大可用",key:"JVM_MEMORY_USE_TOTAL"},
+        {name:"JVM内存使用比例",key:"JVM_MEMORY_RATE"},
+        {name:"JVM空余内存",key:"JVM_FREE_MEMORY"},
+        {name:"JVM堆初始分配内存",key:"JVM_HEAP_INIT_MEMORY"},
+        {name:"JVM堆最大可用内存",key:"JVM_HEAP_MAX_MEMORY"},
+        {name:"JVM堆空间已使用内存",key:"JVM_HEAP_USED_MEMORY"}];
+      function loadKeys() {
+          var array=[];
+         for(var item in mapKeys){
+             array.push(mapKeys[item].key);
+          }
+        keys=array.join();
+      };
+
+        //加载实时计数
+        function loadRealCount() {
+          console.log("执行了loadRealCount");
+          if(keys.length<1){
+              loadKeys();
+          }
+            $.ajax({
+                url: host+"/monitor/getCountByKeys?keys="+keys,
+                type: "GET",
+                success: function(data){
+
+                    if(data.code.errcode=="0"){
+                        var infos=data.data;
+                        if(infos!=null){
+                            for (var i=0;i<infos.length;i++){
+                              var info=  infos[i];
+                                if(info!=null){
+                                    var obj=mapKeys.find(function (x) {
+                                        return x.key === info.key;
+                                    })
+                                 if(obj!=null){
+                                     obj.count=info.value;
+                                 }
+                                }
+                            }
+                              printHtml();
+                          //赋值完毕，打印出来
+                        }
+
+                    }else{
+                        layer.msg("加载失败", {icon: 5});
+                    }
+                }
+
+            });
+        };
+        function printHtml() {
+            var htmltype1="", htmltype2="";
+           var  eventQuene= $("#eventQuene");
+            var  realAnalysisQuene= $("#realAnalysisQuene");
+            var format = "<li><div><h3 title='{0}'> {0}</h3><span >{1}</span></div></li>";
+
+            for (var info in mapKeys){
+               var s= mapKeys[info];
+                if(s.type==1){
+                    if(s.count>0){
+                        htmltype1+=format.signMix(s.name,s.count);
+                    }
+
+                }else if(s.type==2){
+                    if(s.count>0) {
+                        htmltype2 += format.signMix(s.name, s.count);
+                    }
+                }
+            }
+            eventQuene.html(htmltype1);
+            realAnalysisQuene.html(htmltype2);
+        };
+
+         function loadCpuInfo() {
+             $.ajax({
+                 url: host+"/monitor/getDataMapValueByKey?key=SystemInfoMonitorManagerKey",
+                 type: "GET",
+                 success: function(data){
+
+                     if(data.code.errcode=="0"){
+                         var infos=data.data;
+                         if(infos!=null){
+
+                             loadCPUhtml(infos);
+                             //赋值完毕，打印出来
+                         }
+
+                     }else{
+                         layer.msg("加载失败", {icon: 5});
+                     }
+                 }
+
+             });
+         };
+        function loadCPUhtml (data){
+            var format = "<div><h3 title='{0}'>{0}</h3><span>{1}</span></div>";
+            var html="";
+            $("#cpuul").html(html);
+            data.forEach(function(element) {
+                var obj=cpumapKeys.find(function (x) {
+                    return x.key === element.key;
+                })
+                if(obj!=null){
+                    html+=format.signMix(obj.name,element.value);
+                }
+
+            });
+            html="<li>"+html+"</li>";
+            $("#cpuul").html(html);
+        };
+        var $ = layui.$, active = {
+        };
+        $('#loadbtn').on('click', function(){
+            loadAllServiceData();
+        });
+
+        $("#timeSpeedSelect").on('change', function(){
+            resetTimerSetting();
+        });
+        function resetTimerSetting() {
+            var value=$("#timeSpeedSelect option:selected").val();
+            var text=$("#timeSpeedSelect").val();
+            console.log("值为："+value);
+            $.ajax({
+                url: host+"/monitor/settingCpuMonitorSpeed?second="+value,
+                type: "GET",
+                success: function(data){
+
+                    if(data.code.errcode=="0"){
+                        var infos=data.data;
+                        if(infos!=null&&infos){
+                            var str="已修改为每"+text+"执行一次";
+                            layer.msg(str);
+
+                        }else {
+                            layer.msg("操作失败", {icon: 5});
+                        }
+
+                    }else{
+                        layer.msg("操作失败", {icon: 5});
+                    }
+                }
+
+            });
+        }
+        function loadAllServiceData() {
+            loadRealCount();
+            loadCpuInfo();
+        }
+        var t1=null;
+        $('#freshenBtn').on('click', function(){
+            if($("#freshenBtn").html()=="定时刷新"){
+             t1=   window.setInterval(loadAllServiceData, 3000);
+             $("#freshenBtn").text("取消定时刷新");
+            }else {
+                //去掉定时器的方法
+                $("#freshenBtn").text("定时刷新");
+                window.clearInterval(t1);
+
+            }
+
+
+        });
+
+        $(".circle span").on("click",function () {
+
+            var id= $(this).attr("id");
+            $('.circle span').each(function (i){
+                var id= $(this).attr("id");
+                $("#"+id+"list").hide();
+            });
+            $("#"+id+"list").show();
+
+        });
+
+    });
+
+
+    String.prototype.signMix= function() {
+        if(arguments.length === 0) return this;
+        var param = arguments[0], str= this;
+        if(typeof(param) === 'object') {
+            for(var key in param)
+                str = str.replace(new RegExp("\\{" + key + "\\}", "g"), param[key]);
+            return str;
+        } else {
+            for(var i = 0; i < arguments.length; i++)
+                str = str.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
+            return str;
+        }
+    }
+
+</script>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>数据中心 - Layui</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">数据中心</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item"><a target="_blank" href="https://www.cnblogs.com/jingch/p/10410949.html">帮助文档</a></li>
+            <li class="layui-nav-item"><a target="_blank" href="https://github.com/honstat/crawler">项目仓库</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">房天下</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="twoHouseDistrictAnalysis.html" target="option">历史成交概况</a></dd>
+                        <dd><a href="echatsShowOfChengJiaoZouShi.html" target="option">小区成交时间走势</a></dd>
+                        <dd><a href="echatsTwoHouseRealAnalysis.html" target="option">二手房实时统计</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">链家</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="echatsShow.html" target="option">按小区统计</a></dd>
+                        <dd><a href="echatsShowTime.html" target="option">按月份统计</a></dd>
+                        <dd><a href="echatsShowOfTimeByCoummunity.html" target="option">小区成交记录走势(链家)</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">统计监控</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="monitorHome.html" target="option">当前概况</a></dd>
+
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">工作台</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="WebSpiderWorkerHome.html" target="option">爬虫控制台</a></dd>
+
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;height:100%">
+
+
+            <iframe id="option" name="option" src="twoHouseDistrictAnalysis.html" style="overflow: visible;" scrolling="no" frameborder="no" width="100%" height="100%">
+            </iframe>
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © github.com/honstat/crawler
+    </div>
+</div>
+<script>
+</script>
+</body>
+</html>

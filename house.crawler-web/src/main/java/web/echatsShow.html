@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+<style type="text/css">
+    .menu div{
+        float: left;
+        margin-right: 30px;
+        text-align: center;
+        height: 50px;
+        line-height: 38px;
+    }    .menu{
+             margin: 0 auto;
+             width: 700px;
+             height: 100px;
+             text-align: center
+         }
+    select {
+        float: left;
+        width: 90px;
+        border: 1px solid #555;
+        padding: 0.5em;
+        font-size: 15px;
+        line-height: 1.3em;
+        background: #fff;
+        -webkit-appearance: none;
+        -webkit-box-shadow: 1px 1px 1px #fff;
+        -webkit-border-radius: 0.5em;
+    }
+    input{
+        height: 33px;
+
+    }
+    .menu p{
+        float: left;
+        margin-right: 10px;
+        font-weight: bold;
+        color: #7b7769;
+    }
+    .divcss5-b{ margin-left:10px;overflow-y:scroll; overflow-x:scroll;}
+    .menu button {
+        float: left;
+    }
+</style>
+    <script src="echats/dist/echarts.min.js"></script>
+</head>
+
+<body>
+<div class="menu">
+    <div >
+        <div>
+            <p>城市</p><select id="citySelect">
+            <option value="1">上海</option>
+            <option value="2">苏州</option>
+            <option value="3">武汉</option>
+        </select>
+        </div>
+        <div>
+            <p>区县</p><input id="keyword" value="嘉定" >
+        </div>
+        <div>
+            <p>时间维度</p><select  id="timeSelect">
+            <option value="1">1个月</option>
+            <option value="3" selected = "selected">3个月</option>
+            <option value="6">6个月</option>
+            <option value="12">12个月</option>
+            <option value="24">24个月</option>
+            <option value="100">全部</option>
+        </select>
+        </div>
+
+    </div>
+
+    <button class="layui-btn" id="loadbtn">加载</button></div>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="height:400px"></div>
+
+</body>
+<!-- ECharts单文件引入 -->
+
+
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        loaddata();
+        $("#loadbtn").click(function(){
+            loaddata();
+        });
+    });
+        function loaddata() {
+            var myChart = echarts.init(document.getElementById('main'));
+            var option = {};
+            var json={};
+            var cityId=$("#citySelect option:selected").val();
+            var district=$("#keyword").val();
+            var timeType=$("#timeSelect  option:selected").val();
+            var method=1;
+            if(district!=null&&district.length>0){
+                method=2;
+            }
+
+            $.ajax({
+                    url: "http://localhost:8081/lian/getTradeAnalysis",
+                    type: "POST",
+                    data: JSON.stringify({"cityld": cityId,"district":district, "showType": "line", "queryMethod": method,"timeType":timeType}),
+                    contentType: "application/json",
+                    success: function (data) {
+
+                        if (data.code.errcode == "0") {
+                            json = data.data;
+                            // 为echarts对象加载数据
+                            if (json != null) {
+
+
+                                option = {
+                                    title: {
+                                        text: json.title.title,
+                                        subtext: json.title.subtext
+                                    },
+                                    tooltip: {
+                                        trigger: 'axis'
+                                    },
+                                    legend: {
+                                        data: (function () {
+                                            var data = json.legend;
+
+                                            return data.data;
+                                        })()
+                                    },
+                                    grid: {
+                                        left: '3%',
+                                        right: '4%',
+                                        bottom: '3%',
+                                        containLabel: true
+                                    },
+                                    toolbox: {
+                                        show: true,
+                                        feature: {
+                                            mark: {show: true},
+                                            dataView: {show: true, readOnly: false},
+                                            magicType: {show: true, type: ['line', 'bar']},
+                                            restore: {show: true},
+                                            saveAsImage: {show: true}
+                                        }
+                                    },
+                                    calculable: true,
+                                    xAxis: [
+                                        {
+                                            type: 'category',
+                                            data: (function () {
+                                                return json.axis[0].data;
+                                            })()
+
+
+                                        }
+                                    ],
+                                    yAxis: [
+                                        {
+                                            type: 'value'
+                                        }
+                                    ],
+                                    series: (function () {
+                                        var data = [];
+                                        for (var i = 0; i < json.series.length; i++) {
+                                            var x = json.series[i];
+                                            var model = {
+                                                name: x.name,
+                                                type: x.type,
+                                                boundaryGap: false,
+                                                data: x.data,
+                                                smooth: true,
+                                                markPoint: {
+                                                    data: [
+                                                        {type: 'max', name: '最大值'},
+                                                        {type: 'min', name: '最小值'}
+                                                    ]
+                                                }
+                                            }
+                                            data.push(model);
+                                        }
+                                        ;
+                                        return data;
+                                    })()
+
+                                };
+                                console.log("进来了1");
+                                myChart.setOption(option);
+
+
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        alert("加载数据图表失败");
+                        console.log(data);
+                    }
+                }
+            );
+
+        };
+
+</script>

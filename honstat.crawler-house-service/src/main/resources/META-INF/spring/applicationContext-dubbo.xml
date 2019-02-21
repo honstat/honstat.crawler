@@ -1,0 +1,21 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+<!-- 本机服务dubbo 服务定义 -->
+    <!--<context:component-scan base-package="com.saas.survey.*"/>-->
+    <!-- 通用配置 -->
+    <dubbo:protocol name="dubbo.test-service" port="8081"/>
+    <dubbo:registry address="zookeeper://10.11.16.68:2181" id="default" default="true"/>
+
+    <dubbo:monitor protocol="registry"/>
+    <dubbo:provider retries="0" timeout="5000" threads="500"/>
+    <dubbo:consumer timeout="3000"/>
+
+
+    <!--&lt;!&ndash;<import resource="classpath*:META-INF/spring/saas.survey-analysis-client.xml" />&ndash;&gt;-->
+    <!--<dubbo:reference interface="com.saas.survey.analysis.base.service.IUser"  version="1.2.4"></dubbo:reference>-->
+
+        </beans>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="honstat.crawler:war">
+    <output-path>$PROJECT_DIR$/honstat.crawler/target</output-path>
+    <root id="archive" name="crawler-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="honstat.crawler:war exploded" />
+    </root>
+  </artifact>
+</component>

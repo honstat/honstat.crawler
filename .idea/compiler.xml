@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="honstat.crawler" />
+        <module name="honstat.crawler-house-service" />
+        <module name="honstat.crawler-interface" />
+        <module name="house.crawler-web" />
+        <module name="houseInterface" />
+        <module name="houseWeb" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="1.8">
+      <module name="honstat.crawler" target="1.8" />
+      <module name="honstat.crawler-house-service" target="1.8" />
+      <module name="honstat.crawler-interface" target="1.8" />
+      <module name="house.Client" target="1.7" />
+      <module name="house.crawler-parent" target="1.7" />
+      <module name="house.crawler-web" target="1.7" />
+      <module name="house.Interface" target="1.7" />
+      <module name="house.Service" target="1.8" />
+      <module name="houseParent" target="1.7" />
+      <module name="houseWeb" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

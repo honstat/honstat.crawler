@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="house.crawler-web:war">
+    <output-path>$PROJECT_DIR$/house.crawler-web/target</output-path>
+    <root id="archive" name="house.Web-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="house.crawler-web:war exploded" />
+    </root>
+  </artifact>
+</component>
