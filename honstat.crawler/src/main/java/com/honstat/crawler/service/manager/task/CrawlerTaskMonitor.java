@@ -3,9 +3,7 @@ package com.honstat.crawler.service.manager.task;
 import org.apache.log4j.Logger;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 /**
  * @author chuanhong.jing
@@ -17,25 +15,32 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class CrawlerTaskMonitor {
     Logger logger = Logger.getLogger(CrawlerTaskMonitor.class);
-    private final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(50) ;
-    ExecutorService executorService;
+
+    private  final  LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(1000) ;
+    ThreadPoolExecutor poolExecutor;
+
     public CrawlerTaskMonitor(Integer theadNums){
-        executorService= Executors.newFixedThreadPool(theadNums);
+        poolExecutor=new ThreadPoolExecutor(theadNums,10,10000, TimeUnit.MILLISECONDS,queue);
+        poolExecutor.prestartCoreThread();
+
     }
     public void initCustomProssorMethod(List<Runnable> list) {
         if (list != null && list.size() > 0) {
             this.queue.addAll(list);
         }
     }
-
+   volatile boolean state;
 
     /**
      * 运行时 随时加任务
      **/
-    public void addTask(Runnable task) {
+    public  void addTask(Runnable task) {
         queue.add(task);
-        execCount = 0;
+        if(!state){
+            notifyAll();
+        }
        if(isComplete){
+           /**重新激活**/
            isComplete=false;
            doTask();
        }
@@ -50,11 +55,6 @@ public class CrawlerTaskMonitor {
         isComplete = true;
     }
 
-    /**
-     * 设定没有主动调用complete()时停止条件，一旦运行时临时添加，重置标记
-     **/
-    int execCount = 0;
-
     public boolean doTask() {
         //初始化环境before
         logger.info("start run doTask");
@@ -67,23 +67,20 @@ public class CrawlerTaskMonitor {
                 //按排序执行
                 if (task != null) {
                     try {
-                        executorService.submit(task);
+                        poolExecutor.execute(task);
                     }catch (Exception e){
                         logger.error("task exec error:"+e.getMessage());
                     }
                 }
             }
-            execCount++;
             try {
-                logger.debug("queue no meage sleeping...");
-                Thread.sleep(1000);
+                logger.debug("queue no meage will wait()...");
+             //   Thread.sleep(1000);
+                state=false;
+                wait();
             } catch (InterruptedException e) {
 
             }
-//            if (execCount > 100) {
-//                isComplete=true;
-//                break;
-//            }
         }
         logger.info("isComplete exit");
         //结束处理after
