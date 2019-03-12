@@ -37,7 +37,7 @@ public class SystemInfoMonitorManager {
     /**
      * 此类中Thread.sleep()里的线程睡眠时间
      */
-    private static final int SLEEP_TIME = 1000 * 10;
+    private static final int SLEEP_TIME = 3000 * 10;
     private static final int PERCENT = 100;
     private static final int FAULTLENGTH = 10;
     private String isWindowsOrLinux = isWindowsOrLinux();

@@ -4,22 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.honstat.crawler.models.in.CommonKeyValue;
-import com.honstat.crawler.models.in.GetTwoHouseAnalysisByCoummunityIn;
-import com.honstat.crawler.models.in.GetTwoHouseAnalysisByDistrictIn;
-import com.honstat.crawler.models.in.QueryTwoHouseRealAnalysisByConditionIn;
+import com.honstat.crawler.models.in.*;
 import com.honstat.crawler.service.manager.ProssorSaveMonitor;
-import com.honstat.crawler.service.manager.task.CrawlerTaskMonitor;
 import com.honstat.crawler.service.manager.task.CustomTaskManager;
 import com.honstat.crawler.service.manager.task.TaskRedisLoaderManager;
 import com.honstat.crawler.service.utils.CountUtils;
+import com.honstat.crawler.service.utils.ThreadPoolFactoryUtil;
 import com.honstat.house.manager.fang.FangTianXiaDoHtmlTask;
 import com.honstat.house.manager.fang.FangTianXiaHouseInfoTask;
 import com.honstat.house.manager.fang.FangTianXiaSaleInfoLoadHtmlPage;
 import com.honstat.house.manager.fang.FangTianXiaTaskManager;
-import com.honstat.crawler.models.in.GetCommunityRecordIn;
-import com.honstat.crawler.models.in.HistoryStepInfoIn;
-import com.honstat.crawler.models.in.HtmlLoadDetailIn;
 import com.honstat.house.service.aop.NeedIdempotentFilter;
 import com.honstat.house.service.dao.model.TwoHouseInfo;
 import com.honstat.house.service.dao.service.TwoHouseAnalysisInfoDaoService;
@@ -133,9 +127,7 @@ public class FangTianXiaController extends BaseController {
         System.out.println("爬虫主程序开始执行，go！");
         System.out.println("============================================");
         /**init tasks**/
-        CrawlerTaskMonitor crawlerTaskMonitor = new CrawlerTaskMonitor(2);
         initTaskQueue();
-        prossorSaveMonitor.registerTimerSave(3);
 
         List<CommonKeyValue> districtList = getDistrict(cityId, baseUrl);
         for (CommonKeyValue districtInfo : districtList) {
@@ -151,11 +143,8 @@ public class FangTianXiaController extends BaseController {
             context.setLink(getLink(cityId, districtInfo.getKey()));
             context.setKey(key);
             FangTianXiaTaskManager manager = new FangTianXiaTaskManager(saleInfoLoadHtmlPage, context, historyStepInfoIn);
-            crawlerTaskMonitor.addTask(manager);
-            break;
+            ThreadPoolFactoryUtil.execute(manager);
         }
-
-        crawlerTaskMonitor.doTask();
         System.out.println("============================================");
         System.out.println("\r\n");
         System.out.println("爬虫主程序执行完成，退出！");
@@ -163,17 +152,18 @@ public class FangTianXiaController extends BaseController {
     }
 
     private void initTaskQueue() {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
+        if (!isInited) {
+            try {
+                CustomTaskManager.setHistoryLoad(taskRedisLoaderManager);
                 CustomTaskManager.getSingleton(GetCommunityRecordIn.class, doTradeAnalysisTask);
                 CustomTaskManager.getSingleton(HtmlLoadDetailIn.class, houseInfoTask);
-                CustomTaskManager.setHistoryLoad(taskRedisLoaderManager);
-
+                prossorSaveMonitor.registerTimerSave(3);
+                isInited = true;
+            } catch (Exception e) {
+                isInited = false;
+                logger.error("initTaskQueue error:" + e.getMessage());
             }
-        };
-        Thread ra = new Thread(r);
-        ra.start();
+        }
     }
 
     private Object getHistory(String key) {
@@ -218,6 +208,7 @@ public class FangTianXiaController extends BaseController {
 
         return new HttpResponseBuild().setData("hello~").build();
     }
+
     @RequestMapping(value = "/analysisByCoummunity", method = {RequestMethod.POST})
     public HttpResponse analysisByCoummunity(@RequestBody GetTwoHouseAnalysisByCoummunityIn in) {
         return new HttpResponseBuild().setData(twoHouseAnalysisService.queryHouseAnalysis(in)).build();
@@ -243,11 +234,13 @@ public class FangTianXiaController extends BaseController {
 
         return new HttpResponseBuild().setData(JSON.toJSONString(infoIn)).build();
     }
+
     @RequestMapping(value = "/testgetRealAnalysis", method = RequestMethod.POST)
     public HttpResponse testgetRealAnalysis(@RequestBody QueryTwoHouseRealAnalysisByConditionIn infoIn) {
 
         return new HttpResponseBuild().setData(JSON.toJSONString(infoIn)).build();
     }
+
     @RequestMapping(value = "/getRealAnalysis", method = RequestMethod.POST)
     public HttpResponse getRealAnalysis(@RequestBody QueryTwoHouseRealAnalysisByConditionIn in) {
         try {

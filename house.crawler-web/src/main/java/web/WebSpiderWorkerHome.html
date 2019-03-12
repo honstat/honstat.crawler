@@ -163,7 +163,7 @@
             var html="<div class='boxdiv'>";
             var waitstr="";
             waitstr=data.waitDistrict.join(',');
-            html+= "<p><span>待抓取区县列表:</span>"+ waitstr+"</p>";
+            html+= "<p style='overflow: auto'><span>待抓取区县列表:</span>"+ waitstr+"</p>";
             var current=data.current;
             if(current!=null){
                 var timestamp = (new Date()).valueOf();

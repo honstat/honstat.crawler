@@ -23,5 +23,5 @@ public class BaseController {
          ex.printStackTrace();
         return new HttpResponseBuild().setData(false).setCode(ErrorEntity.define("-1",ex.getMessage()));
     }
-
+    volatile static boolean isInited=false;
 }

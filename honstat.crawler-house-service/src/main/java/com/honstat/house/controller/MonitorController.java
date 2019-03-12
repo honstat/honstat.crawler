@@ -9,6 +9,7 @@ import com.honstat.crawler.service.models.ProssorMonitorContextManager;
 import com.honstat.crawler.service.models.TwoHouseRunTimeProssorMonitorContext;
 import com.honstat.crawler.service.utils.CountUtils;
 
+import com.honstat.crawler.service.utils.ThreadPoolFactoryUtil;
 import com.honstat.house.manager.fang.FangTianXiaDoHtmlTask;
 import com.honstat.house.manager.fang.FangTianXiaHouseInfoTask;
 
@@ -18,6 +19,7 @@ import com.honstat.crawler.models.DistrictRunTimeInfo;
 import com.honstat.house.utils.HttpResponse;
 import com.honstat.house.utils.HttpResponseBuild;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author chuanhong.jing
@@ -98,14 +101,23 @@ public class MonitorController {
                 Integer count = CountUtils.getCount(key);
                 if(count>0){
                     result.add(new CommonKeyValue(key, String.valueOf(count)));
+                }else {
+                    if(key.equals("getDistrctTaskQueueCount")){
+                        result.add(new CommonKeyValue(key, String.valueOf(getDistrctTaskQueueCount())));
+                    }
                 }
             }
+
             return new HttpResponseBuild().setData(result).build();
         } else {
             return new HttpResponseBuild().setData(null).build();
         }
 
 
+    }
+
+    public Integer getDistrctTaskQueueCount() {
+            return ThreadPoolFactoryUtil.getWaitSize();
     }
 
     @ApiOperation(value = "设置服务器资源采集频率")

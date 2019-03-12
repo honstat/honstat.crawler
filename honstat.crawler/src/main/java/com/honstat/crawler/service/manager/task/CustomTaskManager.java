@@ -4,6 +4,7 @@ package com.honstat.crawler.service.manager.task;
 import com.honstat.crawler.service.IHistoryLoad;
 import com.honstat.crawler.service.IQueueTaskManager;
 import com.honstat.crawler.service.IQuqueTaskService;
+import com.honstat.crawler.service.utils.ThreadPoolFactoryUtil;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,14 +31,12 @@ public class CustomTaskManager {
   static IHistoryLoad historyLoad = null;
 
     private static final ConcurrentMap<String, IQueueTaskManager> map = new ConcurrentHashMap<>(5);
-    static ExecutorService executorService = Executors.newFixedThreadPool(4);
      /**
       * 指定队列数据加载器，可以自己实现，决定存储方式（redis,kafka,other）
       * **/
     public static void setHistoryLoad(IHistoryLoad _historyLoader) {
         if(historyLoad==null){
             historyLoad = _historyLoader;
-            init();
         }
 
     }
@@ -70,13 +69,14 @@ public class CustomTaskManager {
                 ob = new QueueTaskManager(constructorService, entityCls,theads);
                 map.put(entityCls.getName(), ob);
             }
-            executorService.submit(new Runnable() {
+            ThreadPoolFactoryUtil.execute(new Runnable() {
                 /***
                  * 做初始化工作
                  */
                 @Override
                 public void run() {
                     map.get(entityCls.getName()).init();
+                    map.get(entityCls.getName()).LoadHistory(historyLoad);
                     map.get(entityCls.getName()).run();
                 }
             });

@@ -98,6 +98,10 @@ public class QueueTaskManager implements IQueueTaskManager {
 
     @Override
     public void LoadHistory(IHistoryLoad loader) {
+        if(loader==null){
+            logger.warn( this.entityClass.getName()+"LoadHistory() loader param is null,can not load history task!");
+            return;
+        }
         historyLoad = loader;
         List<BaseQueueTaskIn> historys = loader.init(entityClass.getName());
         if (historys != null && historys.size() > 0) {

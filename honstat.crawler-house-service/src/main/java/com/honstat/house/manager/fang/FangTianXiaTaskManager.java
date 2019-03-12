@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 
 import com.honstat.crawler.models.in.CommonKeyValue;
 import com.honstat.crawler.models.in.HistoryStepInfoIn;
+import com.honstat.crawler.service.utils.ThreadPoolFactoryUtil;
 import org.apache.log4j.Logger;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -31,7 +33,12 @@ public class FangTianXiaTaskManager implements Runnable {
         logger.info("run doTask inputparam: contextIn:"+ JSON.toJSONString(contextIn)+"history: "+ JSON.toJSONString(history));
         try {
             List<CommonKeyValue> subDistrictLinks = LoadHtmlPageManager.loadPostionDistrictMaps(contextIn,historyStepInfoIn);
-
+            if(subDistrictLinks.size()==0){
+                logger.error("被反爬虫手段屏蔽了！参数："+JSON.toJSONString(contextIn));
+                /**此处如果频繁错误，将会导致死循环**/
+                ThreadPoolFactoryUtil.executeDelaye(this,1L, TimeUnit.MINUTES);
+                return;
+            }
             boolean isneedload=false;
             boolean isfind=false;
             if(historyStepInfoIn!=null){
